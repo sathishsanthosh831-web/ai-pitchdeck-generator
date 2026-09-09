@@ -1,35 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Pitch Deck Generator</title>
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-Based Pitch Deck Generator</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="page">
-    <header class="hero">
-      <h1>AI-Based Pitch Deck Generator</h1>
-      <p>Describe your startup idea. Get a structured, editable, exportable pitch deck in seconds.</p>
-    </header>
+  <!-- Header Navbar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <div class="logo-icon">🚀</div>
+        <div>
+          <h2>AI Pitch Deck Generator</h2>
+          <span class="badge">B.Sc Computer Science Final Year Project</span>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <button id="btn-export-pptx" class="btn btn-emerald" disabled>📥 Export PowerPoint (.pptx)</button>
+        <button id="btn-view-history" class="btn btn-secondary">📜 Deck History</button>
+      </div>
+    </div>
+  </header>
 
-    <main class="card">
-      <form id="ideaForm">
-        <label for="startup_idea">Your startup / business idea</label>
-        <textarea id="startup_idea" rows="6"
-          placeholder="e.g. A mobile app that connects local farmers directly with restaurants, cutting out middlemen and reducing food waste..."
-          required></textarea>
+  <!-- Main Content Layout -->
+  <main class="main-container">
+    <!-- Left Column: Business Idea Input Form -->
+    <section class="form-card">
+      <div class="card-header">
+        <h3>💡 1. Enter Business Idea</h3>
+        <p>AI will analyze your inputs and synthesize an 11-slide pitch deck.</p>
+      </div>
 
-        <label for="industry">Industry (optional)</label>
-        <input type="text" id="industry" placeholder="e.g. AgriTech, FinTech, HealthTech">
+      <div class="preset-buttons">
+        <span>Quick Samples:</span>
+        <button type="button" class="chip" onclick="loadSample(0)">🏥 HealthTech</button>
+        <button type="button" class="chip" onclick="loadSample(1)">🚚 Clean Logistics</button>
+        <button type="button" class="chip" onclick="loadSample(2)">🎓 EdTech AI</button>
+      </div>
 
-        <button type="submit" id="generateBtn">Generate Pitch Deck</button>
+      <form id="pitch-form">
+        <div class="form-group">
+          <label for="companyName">Startup / Product Name *</label>
+          <input type="text" id="companyName" required placeholder="e.g. NexaHealth AI">
+        </div>
+
+        <div class="form-group">
+          <label for="industry">Industry / Sector *</label>
+          <input type="text" id="industry" required placeholder="e.g. Healthcare, Fintech, EdTech, SaaS">
+        </div>
+
+        <div class="form-group">
+          <label for="tagline">One-Line Elevator Pitch</label>
+          <input type="text" id="tagline" placeholder="e.g. Predictive diagnostics triage powered by ML">
+        </div>
+
+        <div class="form-group">
+          <label for="problemStatement">Problem Statement *</label>
+          <textarea id="problemStatement" rows="2" required placeholder="What critical customer problem are you solving?"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="solutionDescription">Proposed Solution *</label>
+          <textarea id="solutionDescription" rows="2" required placeholder="How does your AI/software solve this?"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="businessModel">Business Model</label>
+            <input type="text" id="businessModel" placeholder="e.g. B2B SaaS $49/month">
+          </div>
+          <div class="form-group">
+            <label for="competitors">Key Competitors</label>
+            <input type="text" id="competitors" placeholder="e.g. Legacy Incumbents">
+          </div>
+        </div>
+
+        <button type="submit" id="btn-generate" class="btn btn-primary btn-block">
+          ✨ Generate AI Pitch Deck
+        </button>
       </form>
+    </section>
 
-      <div id="status" class="status hidden"></div>
-    </main>
-  </div>
+    <!-- Right Column: Slide Deck Preview & Carousel -->
+    <section class="preview-card">
+      <div class="card-header preview-header">
+        <div>
+          <h3 id="deck-title-display">📊 2. Pitch Deck Presentation</h3>
+          <p id="deck-slide-count">No deck generated yet. Submit form on the left.</p>
+        </div>
+        <div class="carousel-controls" id="carousel-controls" style="display:none;">
+          <button id="btn-prev" class="btn btn-secondary btn-sm">⬅️ Prev</button>
+          <span id="slide-indicator">Slide 1 / 11</span>
+          <button id="btn-next" class="btn btn-secondary btn-sm">Next ➡️</button>
+        </div>
+      </div>
 
-  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+      <!-- Slide Canvas -->
+      <div id="slide-stage" class="slide-stage">
+        <div class="empty-state" id="empty-state">
+          <div class="empty-icon">📽️</div>
+          <h4>Your Generated Pitch Slides Will Appear Here</h4>
+          <p>Fill out the business idea form or click one of the quick sample chips to test.</p>
+        </div>
+
+        <div id="active-slide-view" class="active-slide" style="display: none;">
+          <div class="slide-badge" id="slide-category">TITLE SLIDE</div>
+          <h2 class="slide-heading" id="slide-title">Company Name</h2>
+          <h4 class="slide-subheading" id="slide-subtitle">Tagline goes here</h4>
+          
+          <div class="slide-content-grid">
+            <ul class="slide-bullets" id="slide-bullets"></ul>
+            <div class="slide-metrics" id="slide-metrics"></div>
+          </div>
+
+          <div class="speaker-notes-box">
+            <strong>🎙️ Presenter Notes:</strong>
+            <p id="slide-speaker-notes">Speaker notes will show here.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thumbnails Strip -->
+      <div class="thumbnails-strip" id="thumbnails-strip" style="display: none;"></div>
+    </section>
+  </main>
+
+  <script src="/static/js/main.js"></script>
 </body>
 </html>

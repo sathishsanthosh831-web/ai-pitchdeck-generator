@@ -1,85 +1,51 @@
-# AI-Based Pitch Deck Generator
+# AI-Based Pitch Deck Generator (B.Sc CS Final Year Project)
 
-Generates a structured, editable pitch deck (problem, solution, features, target
-audience, market opportunity, business model, competitors, future scope) from a
-one-paragraph startup idea, using an LLM — then exports it as a `.pptx` file.
+A complete web-based application built with **Python, Flask, HTML, CSS, JavaScript, and python-pptx** to automatically generate, customize, and export professional startup pitch decks using Artificial Intelligence.
 
-## Stack
-- **Frontend:** HTML, CSS, vanilla JavaScript
-- **Backend:** Python (Flask)
-- **Database:** PostgreSQL
-- **AI:** Anthropic Claude API (swappable for OpenAI/Gemini)
-- **Export:** python-pptx
+---
 
-## Project structure
+## 🚀 How to Run in Visual Studio Code (Windows / Linux / Mac)
+
+### Step 1: Open in VS Code
+1. Extract the downloaded ZIP file.
+2. Open **Visual Studio Code** and choose **File > Open Folder**, then select this extracted folder.
+
+### Step 2: Open Terminal in VS Code
+- Press `Ctrl + `` (backtick) or go to **Terminal > New Terminal**.
+
+### Step 3: Install Required Dependencies
+Run:
+```bash
+pip install -r requirements.txt
 ```
-pitchdeck-generator/
-├── app.py                  # Flask routes / API
-├── requirements.txt
-├── schema.sql               # PostgreSQL schema
-├── .env.example              # copy to .env and fill in
-├── models/
-│   └── db.py                 # PostgreSQL queries
-├── services/
-│   ├── ai_generator.py        # calls the LLM, returns structured JSON
-│   └── ppt_generator.py       # builds the .pptx with python-pptx
-├── templates/
-│   ├── index.html             # idea input form
-│   └── editor.html            # slide review/edit screen
-├── static/
-│   ├── css/style.css
-│   └── js/main.js, editor.js
-└── exports/                  # generated .pptx files land here
+*(If you have multiple Python versions installed, use `python -m pip install -r requirements.txt` or `python3 -m pip install -r requirements.txt`)*
+
+### Step 4: Run the Flask Web Server
+Run:
+```bash
+python app.py
 ```
 
-## Setup
+### Step 5: Open in Your Browser
+Open your web browser and visit:
+```
+http://127.0.0.1:5000
+```
 
-1. **Install dependencies**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate        # Windows: venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
+---
 
-2. **Set up PostgreSQL**
-   ```bash
-   psql -U postgres -d pitchdeck_db -f schema.sql
-   ```
+## 🏗️ Project Architecture & Modules
 
-3. **Configure environment variables**
-   ```bash
-   cp .env.example .env
-   # then edit .env with your DB credentials and ANTHROPIC_API_KEY
-   ```
+1. **User Login & Registration:** Session management and saved decks per user account.
+2. **Business Idea Input:** Startup name, industry, problem, solution, target audience, business model, and key competitors.
+3. **AI Content Generation:** Generates 11 structured slides (Title, Problem, Solution, Target Customers, Key Features, TAM/SAM/SOM, Business Model, Competitors, Marketing Strategy, Roadmap, and Vision & Strategic Growth).
+4. **Pitch Deck Preview:** Interactive slide carousel with live responsive rendering.
+5. **Edit & Customize:** In-place editing of slide titles, bullet points, and presenter notes.
+6. **PowerPoint (.pptx) Generation:** Uses Python's `python-pptx` library to create native 16:9 widescreen PowerPoint files.
+7. **Download & History:** Local database persistence via SQLite / MySQL.
 
-4. **Run the app**
-   ```bash
-   python app.py
-   ```
-   Visit `http://localhost:5000`
+---
 
-## How it works
+## 🎓 Viva Questions & External Examiner Preparation
 
-1. User enters their startup idea + industry on the home page.
-2. `POST /api/generate` sends the idea to `services/ai_generator.py`, which
-   prompts the LLM to return strict JSON: startup name, tagline, and 8 slides
-   (problem, solution, key features, target audience, market opportunity,
-   business model, competitors, future scope), each with a title and bullets.
-3. The deck and slides are saved to PostgreSQL (`decks` and `slides` tables).
-4. The user is redirected to `/editor/<deck_id>`, which loads the slides via
-   `GET /api/decks/<id>` and renders them as editable cards. Edits auto-save
-   via `PUT /api/slides/<id>` (debounced).
-5. Clicking **Export as PPT** hits `GET /api/decks/<id>/export`, which builds
-   the `.pptx` with `services/ppt_generator.py` (python-pptx) and downloads it.
-
-## Notes / next steps
-- Auth is stubbed out (`user_id` is nullable) — add login/signup and pass the
-  real `user_id` into `create_deck()` when you're ready for multi-user support.
-- `ai_generator.py` uses the Anthropic SDK; swap `_call_llm()` for OpenAI's
-  `chat.completions.create()` if you'd rather use GPT — the rest of the app
-  only depends on the JSON shape it returns.
-- The pptx design in `ppt_generator.py` is intentionally simple — customize
-  colors/fonts/layout in that file, or add a template picker so users choose
-  a theme before export.
-- Consider adding a "Regenerate this slide" button (call the AI for just one
-  slide_type) instead of only whole-deck regeneration.
+See `viva_prep.md` in this folder for the full list of examiner questions with answers!
