@@ -1,0 +1,15 @@
+# Environment / secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
+env/
+.venv/
+
+# Generated exports
+exports/*.pptx
+
+# OS
+.DS_Store

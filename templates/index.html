@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Pitch Deck Generator</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="page">
+    <header class="hero">
+      <h1>AI-Based Pitch Deck Generator</h1>
+      <p>Describe your startup idea. Get a structured, editable, exportable pitch deck in seconds.</p>
+    </header>
+
+    <main class="card">
+      <form id="ideaForm">
+        <label for="startup_idea">Your startup / business idea</label>
+        <textarea id="startup_idea" rows="6"
+          placeholder="e.g. A mobile app that connects local farmers directly with restaurants, cutting out middlemen and reducing food waste..."
+          required></textarea>
+
+        <label for="industry">Industry (optional)</label>
+        <input type="text" id="industry" placeholder="e.g. AgriTech, FinTech, HealthTech">
+
+        <button type="submit" id="generateBtn">Generate Pitch Deck</button>
+      </form>
+
+      <div id="status" class="status hidden"></div>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

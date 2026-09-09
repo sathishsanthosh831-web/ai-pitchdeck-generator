@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit Pitch Deck</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="page editor-page">
+    <header class="editor-header">
+      <h1 id="deckTitle">Loading deck...</h1>
+      <button id="exportBtn" class="export-btn">Export as PPT</button>
+    </header>
+
+    <main id="slidesContainer" class="slides-container">
+      <!-- Slide cards injected by JS -->
+    </main>
+  </div>
+
+  <script>
+    const DECK_ID = {{ deck_id }};
+  </script>
+  <script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+</body>
+</html>
