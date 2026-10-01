@@ -17,7 +17,11 @@ app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'pitchdeck-secret-key-b
 _db_url = os.getenv('DATABASE_URL', 'sqlite:///pitchdecks.db')
 # Render's DATABASE_URL sometimes starts with postgres:// which SQLAlchemy no longer accepts
 if _db_url.startswith('postgres://'):
-    _db_url = _db_url.replace('postgres://', 'postgresql://', 1)
+    _db_url = _db_url.replace('postgres://', 'postgresql+psycopg2://', 1)
+elif _db_url.startswith('postgresql://'):
+    _db_url = _db_url.replace('postgresql://', 'postgresql+psycopg2://', 1)
+elif _db_url.startswith('postgresql+psycopg://'):
+    _db_url = _db_url.replace('postgresql+psycopg://', 'postgresql+psycopg2://', 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = _db_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
