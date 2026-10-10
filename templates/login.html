@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign in · AI Pitch Deck Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;padding:24px;font-family:'Plus Jakarta Sans',sans-serif;color:#172033;background:radial-gradient(ellipse at top left,#dbeafe 0,transparent 45%),linear-gradient(135deg,#f8fafc,#eef2ff)}
+.card{width:min(100%,440px);background:#fff;border:1px solid #e5e7eb;border-radius:26px;padding:42px 36px;box-shadow:0 24px 80px #1e293b18;text-align:center}.logo{margin:auto auto 20px;width:66px;height:66px;display:grid;place-items:center;border-radius:20px;background:#eef2ff;font-size:32px}h1{font-size:27px;line-height:1.25;margin:0 0 12px;font-weight:800;letter-spacing:-.7px}p{color:#64748b;line-height:1.7;font-size:14px;margin:0 0 28px}.google{width:100%;display:flex;align-items:center;justify-content:center;gap:12px;padding:14px 18px;border:1px solid #d1d5db;border-radius:12px;background:white;color:#1f2937;font:600 15px 'Plus Jakarta Sans',sans-serif;text-decoration:none;transition:.2s}.google:hover{background:#f8fafc;box-shadow:0 4px 14px #0f172a12}.g{font:bold 21px Arial;color:#4285f4}.small{font-size:11px;color:#94a3b8;margin:24px 0 0}.alert{background:#fff7ed;color:#9a3412;padding:12px;border-radius:10px;font-size:13px;margin-bottom:18px}.brand{font-size:12px;font-weight:800;letter-spacing:1.5px;color:#6366f1;margin-bottom:12px}
+</style></head>
+<body><main class="card"><div class="logo">🚀</div><div class="brand">PITCHORA WORKSPACE</div><h1>Build your next big idea.</h1><p>Sign in with Google to access your AI Pitch Deck Generator workspace and create presentation-ready pitch decks.</p>
+{% if config_error %}<div class="alert">Google sign-in isn't configured yet. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in Render Environment settings.</div>{% endif %}
+{% if auth_error %}<div class="alert">{{ auth_error }}</div>{% endif %}
+<a class="google" href="/login/google"><span class="g">G</span> Continue with Google</a>
+<div class="small">Secure sign-in powered by Google OAuth 2.0</div></main></body></html>

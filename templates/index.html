@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI-Based Pitch Deck Generator</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="toast-container" class="toast-container"></div>
+
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <div class="logo-icon">🚀</div>
+        <div>
+          <h2>AI Pitch Deck Generator</h2>
+          <span class="badge">B.Sc Computer Science Final Year Project</span>
+        </div>
+      </div>
+      <div class="nav-actions">\n        {% if google_user %}<span class="google-user-label" title="{{ google_user.email }}">👤 {{ google_user.name }}</span><a class="btn btn-secondary" href="/logout" style="text-decoration:none">Sign out</a>{% endif %}
+        <button id="btn-theme" class="icon-btn" title="Toggle light/dark mode" aria-label="Toggle theme">☀️</button>
+        <button id="btn-theme-deck" class="btn btn-secondary" disabled>🎨 Theme</button>
+        <button id="btn-export-menu" class="btn btn-emerald" disabled>📤 Export</button>
+        <button id="btn-view-history" class="btn btn-secondary">📜 Deck History</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+    <!-- Recent decks: enhancement #9 -->
+    <section class="recent-section">
+      <div class="recent-heading">
+        <div>
+          <span class="section-kicker">WORKSPACE</span>
+          <h3>Recent Pitch Decks</h3>
+          <p>Quickly reopen your latest AI-generated presentations.</p>
+        </div>
+        <button id="btn-refresh-recent" class="btn btn-secondary btn-sm">↻ Refresh</button>
+      </div>
+      <div id="recent-decks" class="recent-decks">
+        <div class="recent-empty">Loading your recent decks...</div>
+      </div>
+    </section>
+
+    <div class="workspace-grid">
+      <section class="form-card">
+        <div class="card-header">
+          <span class="step-pill">STEP 1</span>
+          <h3>💡 Enter Business Idea</h3>
+          <p>Give the AI a few details and it will build your presentation structure.</p>
+        </div>
+
+        <div class="preset-buttons">
+          <span>Quick Samples:</span>
+          <button type="button" class="chip" onclick="loadSample(0)">🏥 HealthTech</button>
+          <button type="button" class="chip" onclick="loadSample(1)">🚚 Clean Logistics</button>
+          <button type="button" class="chip" onclick="loadSample(2)">🎓 EdTech AI</button>
+        </div>
+
+        <form id="pitch-form">
+          <div class="form-group">
+            <label for="companyName">Startup / Product Name *</label>
+            <input type="text" id="companyName" required placeholder="e.g. NexaHealth AI">
+          </div>
+          <div class="form-group">
+            <label for="industry">Industry / Sector *</label>
+            <input type="text" id="industry" required placeholder="e.g. Healthcare, Fintech, EdTech, SaaS">
+          </div>
+          <div class="form-group">
+            <label for="tagline">One-Line Elevator Pitch</label>
+            <input type="text" id="tagline" placeholder="e.g. Predictive diagnostics triage powered by ML">
+          </div>
+          <div class="form-group">
+            <label for="problemStatement">Problem Statement *</label>
+            <textarea id="problemStatement" rows="2" required placeholder="What critical customer problem are you solving?"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="solutionDescription">Proposed Solution *</label>
+            <textarea id="solutionDescription" rows="2" required placeholder="How does your AI/software solve this?"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="targetAudience">Target Audience</label>
+            <input type="text" id="targetAudience" placeholder="e.g. Busy college students who need quick healthy meals">
+          </div>
+          <div class="form-group">
+            <label for="targetMarket">Target Market / Geography (recommended for estimates)</label>
+            <input type="text" id="targetMarket" placeholder="e.g. College students in Tamil Nadu, India">
+          </div>
+          <div class="form-group">
+            <label for="knownUserBase">Known potential users (optional)</label>
+            <input type="number" id="knownUserBase" min="0" step="1" placeholder="Enter a known count, or leave blank">
+            <small>Leave blank if unknown. AI estimates must show assumptions and must not be presented as verified statistics.</small>
+          </div>
+          <details class="advanced-planning-panel">
+            <summary>🧮 Advanced Planning & Financial Model (optional)</summary>
+            <p class="advanced-planning-help">Enter assumptions you know. Leave unknown values blank; calculations will not invent missing data.</p>
+            <div class="form-row">
+              <div class="form-group"><label for="monthlyPrice">Monthly price per paying customer</label><input type="number" id="monthlyPrice" min="0" step="0.01" placeholder="e.g. 499"></div>
+              <div class="form-group"><label for="monthlyCosts">Monthly operating costs</label><input type="number" id="monthlyCosts" min="0" step="0.01" placeholder="e.g. 25000"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label for="customerVariableCost">Variable cost/customer/month</label><input type="number" id="customerVariableCost" min="0" step="0.01" placeholder="e.g. 80"></div>
+              <div class="form-group"><label for="monthlyMarketing">Monthly marketing spend</label><input type="number" id="monthlyMarketing" min="0" step="0.01" placeholder="e.g. 5000"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label for="newCustomersMonthly">New paying customers/month</label><input type="number" id="newCustomersMonthly" min="0" step="1" placeholder="e.g. 20"></div>
+              <div class="form-group"><label for="marketCustomers">Eligible target-market customers</label><input type="number" id="marketCustomers" min="0" step="1" placeholder="Verified count only"></div>
+            </div>
+            <div class="form-group"><label for="marketPenetration">Expected market capture (%)</label><input type="number" id="marketPenetration" min="0" max="100" step="0.1" placeholder="e.g. 2.5"></div>
+            <small>Calculations include contribution per customer, break-even customer count, CAC and illustrative market capture when the required inputs are provided. Currency is not assumed.</small>
+          </details>
+          <button type="submit" id="btn-generate" class="btn btn-primary btn-block">
+            ✨ Generate AI Pitch Deck
+          </button>
+        </form>
+      </section>
+
+      <section class="preview-card" id="preview-card">
+        <div class="card-header preview-header">
+          <div>
+            <span class="step-pill">STEP 2</span>
+            <h3 id="deck-title-display">📊 Pitch Deck Presentation</h3>
+            <p id="deck-slide-count">No deck generated yet. Submit the form on the left.</p>
+          </div>
+          <div class="preview-actions">
+            <button id="btn-edit-slide" class="btn btn-secondary btn-sm" disabled>✏️ Edit Slide</button>
+            <button id="btn-practice" class="btn btn-secondary btn-sm" disabled>🎤 Practice My Pitch</button>
+            <button id="btn-rewrite" class="btn btn-ai btn-sm" disabled>✨ Rewrite Slide</button>
+            <button id="btn-improve" class="btn btn-ai btn-sm" disabled>💡 Improve My Pitch</button>
+            <button id="btn-fullscreen" class="icon-btn" title="Full-screen preview" disabled>⛶</button>
+          </div>
+        </div>
+
+        <div class="pitch-progress" id="pitch-progress" aria-label="Pitch creation progress">
+          <div class="pitch-progress-top"><div><span class="section-kicker">PITCH JOURNEY</span><strong id="pitch-progress-label">Start by generating your deck</strong></div><span class="pitch-percent" id="pitch-percent">20%</span></div>
+          <div class="pitch-steps">
+            <div class="pitch-step active" data-step="idea"><span>1</span><small>Idea</small></div><i></i>
+            <div class="pitch-step" data-step="generate"><span>2</span><small>Generate</small></div><i></i>
+            <div class="pitch-step" data-step="slides"><span>3</span><small>Slides</small></div><i></i>
+            <div class="pitch-step" data-step="refine"><span>4</span><small>Refine</small></div><i></i>
+            <div class="pitch-step" data-step="export"><span>5</span><small>Export</small></div>
+          </div>
+        </div>
+
+        <div class="progress-wrap" id="slide-progress-wrap" style="display:none;">
+          <div class="progress-meta"><span>Presentation progress</span><strong id="progress-text">1 / 1</strong></div>
+          <div class="progress-track"><div id="slide-progress" class="progress-bar"></div></div>
+        </div>
+
+        <div id="slide-stage" class="slide-stage">
+          <div class="empty-state" id="empty-state">
+            <div class="empty-icon">📽️</div>
+            <h4>Your Generated Pitch Slides Will Appear Here</h4>
+            <p>Fill out the business idea form or click one of the quick sample chips to test.</p>
+          </div>
+
+          <div id="active-slide-view" class="active-slide" style="display:none;">
+            <div class="slide-badge" id="slide-category">TITLE SLIDE</div>
+            <h2 class="slide-heading" id="slide-title">Company Name</h2>
+            <h4 class="slide-subheading" id="slide-subtitle">Tagline goes here</h4>
+            <div class="slide-content-grid">
+              <ul class="slide-bullets" id="slide-bullets"></ul>
+              <div class="slide-metrics" id="slide-metrics"></div>
+            </div>
+            <div class="speaker-notes-box">
+              <strong>🎙️ Presenter Notes:</strong>
+              <p id="slide-speaker-notes">Speaker notes will show here.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="preview-footer">
+          <div class="carousel-controls" id="carousel-controls" style="display:none;">
+            <button id="btn-prev" class="btn btn-secondary btn-sm">⬅️ Prev</button>
+            <span id="slide-indicator">Slide 1 / 11</span>
+            <button id="btn-next" class="btn btn-secondary btn-sm">Next ➡️</button>
+          </div>
+          <div class="preview-hint">Tip: use the thumbnails to jump between slides.</div>
+        </div>
+        <div class="thumbnails-strip" id="thumbnails-strip" style="display:none;"></div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Improve Pitch modal: enhancement #10 -->
+  <div id="improve-modal" class="overlay-modal" style="display:none;">
+    <div class="feature-dialog improve-dialog">
+      <div class="feature-header">
+        <div><span class="section-kicker">AI ASSISTANT</span><h3>✨ Improve My Pitch</h3><p>Practical suggestions based on the generated deck.</p></div>
+        <button class="icon-btn" data-close="improve-modal">✕</button>
+      </div>
+      <div id="improvement-list" class="improvement-list"></div>
+      <div class="feature-footer"><button class="btn btn-primary" data-close="improve-modal">Got it</button></div>
+    </div>
+  </div>
+
+  <!-- Presentation Themes -->
+  <div id="theme-modal" class="overlay-modal" style="display:none;">
+    <div class="feature-dialog theme-dialog">
+      <div class="feature-header">
+        <div><span class="section-kicker">PRESENTATION DESIGN</span><h3>🎨 Choose Your Deck Theme</h3><p>Change the visual style of your pitch without changing its content.</p></div>
+        <button class="icon-btn" data-close="theme-modal">✕</button>
+      </div>
+      <div class="theme-grid">
+        <button class="theme-card active" data-theme-choice="professional"><span class="theme-preview professional-preview"><b>YOUR IDEA</b><small>Clear. Simple. Professional.</small></span><strong>💼 Professional</strong><small>Clean and formal for academic or business presentations.</small></button>
+        <button class="theme-card" data-theme-choice="startup"><span class="theme-preview startup-preview"><b>MAKE IT HAPPEN</b><small>Turn ideas into action.</small></span><strong>🚀 Startup</strong><small>Bold, energetic and modern for startup-style pitches.</small></button>
+        <button class="theme-card" data-theme-choice="dark"><span class="theme-preview dark-preview"><b>AI PITCH</b><small>Smart. Modern. Focused.</small></span><strong>🌙 Dark</strong><small>Technology-focused dark design with strong contrast.</small></button>
+      </div>
+      <div class="theme-footer"><span id="theme-selected-label">Professional theme selected</span><button class="btn btn-primary" id="apply-theme">Apply Theme</button></div>
+    </div>
+  </div>
+
+  <!-- Export modal: enhancement #7 -->
+  <div id="export-modal" class="overlay-modal" style="display:none;">
+    <div class="feature-dialog export-dialog">
+      <div class="feature-header">
+        <div><span class="section-kicker">EXPORT CENTER</span><h3>📤 Export Your Pitch</h3><p>Choose how you want to save or share your presentation.</p></div>
+        <button class="icon-btn" data-close="export-modal">✕</button>
+      </div>
+      <div class="export-options">
+        <button id="export-pptx-option" class="export-option"><span>📊</span><div><strong>PowerPoint Presentation</strong><small>Download a ready-to-present .pptx file</small></div><b>→</b></button>
+        <button id="export-pdf-option" class="export-option"><span>📄</span><div><strong>PDF Presentation</strong><small>Download a shareable PDF copy</small></div><b>→</b></button>
+        <button id="export-summary-option" class="export-option"><span>📝</span><div><strong>Pitch Summary</strong><small>Save the deck content as a .txt summary</small></div><b>→</b></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Practice My Pitch -->
+  <div id="practice-modal" class="overlay-modal" style="display:none;">
+    <div class="feature-dialog practice-dialog">
+      <div class="feature-header practice-header">
+        <div>
+          <span class="section-kicker">PRESENTATION COACH</span>
+          <h3>🎤 Practice My Pitch</h3>
+          <p>Rehearse your presentation slide-by-slide with a natural speaker script and live coaching.</p>
+        </div>
+        <button class="icon-btn" data-close="practice-modal">✕</button>
+      </div>
+
+      <div class="practice-session-bar">
+        <div class="practice-session-info"><span class="practice-live-dot"></span><span id="practice-slide-label">Slide 1 / 1</span><small id="practice-status">Ready to rehearse</small></div>
+        <div class="practice-clock"><span id="practice-timer">00:00</span><small>SESSION TIME</small></div>
+      </div>
+
+      <div class="practice-layout">
+        <aside class="practice-slide-card">
+          <div class="practice-mini-preview">
+            <span id="practice-category">OVERVIEW</span>
+            <h4 id="practice-slide-title">Your slide</h4>
+            <p id="practice-slide-subtitle">Slide preview</p>
+            <ul id="practice-slide-points"></ul>
+          </div>
+          <div class="practice-slide-progress"><div><span>Deck progress</span><strong id="practice-progress-text">1 / 1</strong></div><div class="practice-progress-track"><div id="practice-progress-bar"></div></div></div>
+          <button id="practice-mark" class="practice-mark-btn">○ Mark slide practiced</button>
+        </aside>
+
+        <section class="practice-main">
+          <div class="practice-script" id="practice-script"></div>
+          <div class="practice-tip" id="practice-tip"><b>💡 Coach tip</b><span>Speak naturally and use the slide as a visual aid rather than reading every word.</span></div>
+        </section>
+      </div>
+
+      <div class="practice-controls">
+        <button id="practice-prev" class="btn btn-secondary btn-sm">← Previous</button>
+        <button id="practice-timer-btn" class="btn btn-primary practice-start-btn">▶ Start Practice</button>
+        <button id="practice-next" class="btn btn-secondary btn-sm">Next →</button>
+      </div>
+      <div class="practice-footer-note"><span>⌨️ Tip: Use ← / → to move between slides.</span><span id="practice-completed">0 slides practiced</span></div>
+    </div>
+  </div>
+
+  <!-- Smart Rewrite -->
+  <div id="rewrite-modal" class="overlay-modal" style="display:none;">
+    <div class="feature-dialog rewrite-dialog">
+      <div class="feature-header">
+        <div><span class="section-kicker">SMART SLIDE EDITOR</span><h3>✨ Rewrite This Slide</h3><p>Turn the current slide into sharper, more presentation-ready content.</p></div>
+        <button class="icon-btn" data-close="rewrite-modal">✕</button>
+      </div>
+      <div class="rewrite-grid">
+        <div class="rewrite-panel"><span>Current</span><h4 id="rewrite-current-title"></h4><p id="rewrite-current-subtitle"></p><ul id="rewrite-current-bullets"></ul></div>
+        <div class="rewrite-arrow">→</div>
+        <div class="rewrite-panel improved"><span>✨ Suggested</span><h4 id="rewrite-new-title"></h4><p id="rewrite-new-subtitle"></p><ul id="rewrite-new-bullets"></ul></div>
+      </div>
+      <div class="rewrite-note">The suggestion keeps your original meaning while making the wording clearer, stronger and easier to present.</div>
+      <div class="feature-footer rewrite-footer"><button class="btn btn-secondary btn-sm" data-close="rewrite-modal">Keep Current</button><button id="btn-apply-rewrite" class="btn btn-primary btn-sm">✓ Apply Rewrite</button></div>
+    </div>
+  </div>
+
+  <!-- Deck History -->
+  <div id="history-modal" class="history-modal" style="display:none;">
+    <div class="history-dialog">
+      <div class="history-header">
+        <div><span class="section-kicker">YOUR WORK</span><h3>📜 Deck History</h3><p>Select a previously generated deck to open it.</p></div>
+        <button id="btn-close-history" class="btn btn-secondary btn-sm">✕ Close</button>
+      </div>
+      <div id="history-list" class="history-list">Loading history...</div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
