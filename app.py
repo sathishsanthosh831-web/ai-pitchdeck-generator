@@ -1,7 +1,10 @@
 import os
 import json
+<<<<<<< HEAD
 import re
 import secrets
+=======
+>>>>>>> 802dcee5c93e129f864a0326144e315f334aef5d
 from datetime import datetime
 from io import BytesIO
 from flask import Flask, render_template, request, jsonify, send_file, session, redirect, url_for, flash
@@ -13,7 +16,10 @@ from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
 from werkzeug.security import generate_password_hash, check_password_hash
 from functools import wraps
+<<<<<<< HEAD
 from authlib.integrations.flask_client import OAuth
+=======
+>>>>>>> 802dcee5c93e129f864a0326144e315f334aef5d
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY', 'change-this-secret-before-online-deployment')
@@ -36,6 +42,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 CORS(app)
 db.init_app(app)
 
+<<<<<<< HEAD
 # Google OAuth (Google-only sign-in; no local username/password form).
 oauth = OAuth(app)
 oauth.register(
@@ -46,6 +53,8 @@ oauth.register(
     client_kwargs={'scope': 'openid email profile'},
 )
 
+=======
+>>>>>>> 802dcee5c93e129f864a0326144e315f334aef5d
 with app.app_context():
     db.create_all()
 
@@ -387,7 +396,11 @@ def index():
 def login():
     if session.get('user_id'):
         return redirect(url_for('index'))
+<<<<<<< HEAD
     error = request.args.get('error')
+=======
+    error = None
+>>>>>>> 802dcee5c93e129f864a0326144e315f334aef5d
     if request.method == 'POST':
         username = (request.form.get('username') or '').strip()
         password = request.form.get('password') or ''
@@ -398,6 +411,7 @@ def login():
             session['username'] = user.username
             return redirect(url_for('index'))
         error = 'Username or password is incorrect.'
+<<<<<<< HEAD
     configured = bool(os.getenv('GOOGLE_CLIENT_ID') and os.getenv('GOOGLE_CLIENT_SECRET'))
     return render_template(
         'login.html',
@@ -459,6 +473,41 @@ def google_callback():
         app.logger.exception('Google OAuth callback failed')
         return redirect(url_for('login', error='Google sign-in failed. Check the OAuth redirect URI and Render logs.'))
 
+=======
+    return render_template('auth.html', mode='login', error=error)
+
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if session.get('user_id'):
+        return redirect(url_for('index'))
+    error = None
+    if request.method == 'POST':
+        username = (request.form.get('username') or '').strip()
+        email = (request.form.get('email') or '').strip().lower()
+        password = request.form.get('password') or ''
+        confirm = request.form.get('confirm_password') or ''
+        if len(username) < 3 or len(username) > 80:
+            error = 'Username must contain 3 to 80 characters.'
+        elif '@' not in email or len(email) > 120:
+            error = 'Enter a valid email address.'
+        elif len(password) < 8:
+            error = 'Password must contain at least 8 characters.'
+        elif password != confirm:
+            error = 'Passwords do not match.'
+        elif User.query.filter(db.func.lower(User.username) == username.lower()).first():
+            error = 'That username is already taken.'
+        elif User.query.filter(db.func.lower(User.email) == email.lower()).first():
+            error = 'An account with that email already exists.'
+        else:
+            user = User(username=username, email=email, password_hash=generate_password_hash(password))
+            db.session.add(user)
+            db.session.commit()
+            session.clear()
+            session['user_id'] = user.id
+            session['username'] = user.username
+            return redirect(url_for('index'))
+    return render_template('auth.html', mode='signup', error=error)
+>>>>>>> 802dcee5c93e129f864a0326144e315f334aef5d
 
 @app.route('/logout', methods=['POST'])
 def logout():

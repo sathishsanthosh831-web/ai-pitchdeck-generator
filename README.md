@@ -109,8 +109,11 @@ python -m PyInstaller --noconfirm --clean --onedir --name Pitchora --add-data "t
 ```
 
 The executable is created under `dist/Pitchora/Pitchora.exe`. Share the entire `dist/Pitchora` folder (or zip that folder), not only the EXE. AI features may require internet access and a valid API key. A desktop window hides the localhost address; Flask still uses an internal local server.
+<<<<<<< HEAD
 
 
 ## Google-only sign-in
 
 Set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `FLASK_SECRET_KEY` in Render Environment Variables. In Google Cloud Console, add the deployed callback URL `https://YOUR-RENDER-SERVICE.onrender.com/auth/google/callback` to **Authorized redirect URIs** (replace the hostname with your actual Render hostname). Keep the Google client secret private and never commit it to GitHub. The app now uses Google OAuth for sign-in; username/password login and sign-up forms are disabled.
+=======
+>>>>>>> 802dcee5c93e129f864a0326144e315f334aef5d
